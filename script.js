@@ -130,21 +130,21 @@ function inapoiAcasa() {
 // --- LOGICA DE EXTRAGERE (Când ajunge pe ?scan=1) ---
 
 async function proceseazaScanareAzi() {
+    /* 
     if (lunaCurenta !== 11) {
         document.getElementById('descriere-rezultat').innerHTML = "<b>Nu trișa!</b> Crăciunul este abia în Decembrie! 🎅";
         return;
     }
+    */
 
-    if (ziuaCurenta > 24) {
-        document.getElementById('descriere-rezultat').innerHTML = "Crăciunul a trecut deja! Sper că a fost magic! 🎄";
-        return;
-    }
+    // Setăm temporar ziua 1 pentru test (asigură-te că există rândul cu zi = 1 în Supabase):
+    const ziDeTest = 1; 
 
     try {
-        let { data, error } = await db.from('zile_advent').select('*').eq('zi', ziuaCurenta).single();
+        let { data, error } = await db.from('zile_advent').select('*').eq('zi', ziDeTest).single();
         
         if (error || !data) {
-            document.getElementById('descriere-rezultat').innerText = "Eroare: Ziua de azi nu e setată în baza de date.";
+            document.getElementById('descriere-rezultat').innerText = "Eroare: Ziua de test nu e în baza de date.";
             return;
         }
 
@@ -186,7 +186,7 @@ async function trageLaSorti() {
         }
 
         // Salvăm în baza de date
-        await db.from('zile_advent').update({ scanat: true, premiu_obtinut: rezultatFinalText }).eq('zi', ziuaCurenta);
+        await db.from('zile_advent').update({ scanat: true, premiu_obtinut: rezultatFinalText }).eq('zi', ziDeTest);
         
     } catch (err) {
         console.error("Eroare la baza de date", err);
