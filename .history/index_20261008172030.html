@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar Advent - Ziua Specială</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+            color: #333;
+            text-align: center;
+            padding: 50px 20px;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+        }
+        .card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            max-width: 400px;
+            width: 100%;
+        }
+        h1 { color: #d9534f; font-size: 24px; margin-bottom: 10px; }
+        p { font-size: 16px; color: #666; margin-bottom: 25px; }
+        button {
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: background 0.3s, transform 0.1s;
+            width: 100%;
+            box-shadow: 0 4px 10px rgba(217, 83, 79, 0.3);
+        }
+        button:hover { background-color: #c9302c; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; box-shadow: none; }
+        #rezultat {
+            margin-top: 25px;
+            font-size: 20px;
+            font-weight: bold;
+            color: #2b547e;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h1 id="titluZi">Calendar Advent 🎄</h1>
+        <p id="descriere">Se verifică cutiuța...</p>
+        
+        <button id="btnExtragere" style="display:none;" onclick="deschideCutia()">Deschide cutiuța de azi!</button>
+        
+        <div id="rezultat"></div>
+    </div>
+
+    <script>
+        // AICI PUI DATELE TALE DIN SUPABASE
+        const SUPABASE_URL = 'https://xpxeplflvkrrdofgbofh.supabase.co';
+        const SUPABASE_ANON_KEY = 'sb_publishable_-AHWG_siQSYls6s4HV3sgw_vIY_Aqas';
+        
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const isAdmin = urlParams.get('admin') === '1';
+        const ziCurenta = parseInt(urlParams.get('zi')) || 1;
+
+        if (isAdmin) {
+            document.getElementById('titluZi').innerText = "🛠️ Panou de Test / Reset";
+            document.getElementById('descriere').innerText = "Aici poți reseta calendarul înainte să îl dăruiești.";
+            document.getElementById('btnExtragere').style.display = "none";
+            document.getElementById('rezultat').innerHTML = `
+                <button onclick="reseteazaTot()" style="background-color: #333; margin-top: 10px;">Resetează totul</button>
+            `;
+        } else {
+            document.getElementById('titluZi').innerText = `Calendar Advent - Ziua ${ziCurenta} 🎁`;
+            verificaStarea();
+        }
+
+        async function verificaStarea() {
+            try {
+                let { data, error } = await supabase
+                    .from('zile_advent')
+                    .select('*')
+                    .eq('zi', ziCurenta)
+                    .single();
+
+                if (error || !data) {
+                    document.getElementById('descriere').innerText = "Eroare: Această zi nu este setată în sistem.";
+                    return;
+                }
+
+                if (data.scanat === true) {
+                    document.getElementById('descriere').innerText = "❌ Ups! Această cutiuță a fost deja deschisă și scanată anterior.";
+                    document.getElementById('rezultat').innerHTML = data.premiu_obtinut 
+                        ? `Premiul câștigat a fost: <span style="color:#d9534f"><b>${data.premiu_obtinut}</b></span>`
+                        : "Ai primit deja dulciurile de atunci!";
+                    return;
+                }
+
+                document.getElementById('descriere').innerText = "Cutiuța este neatinsă! Apasă mai jos pentru a vedea ce ai primit:";
+                document.getElementById('btnExtragere').style.display = "block";
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('descriere').innerText = "A apărut o eroare de conexiune.";
+            }
+        }
+
+        async function deschideCutia() {
+            const btn = document.getElementById('btnExtragere');
+            btn.disabled = true;
+            document.getElementById('rezultat').innerHTML = "Se deschide...";
+
+            try {
+                let { data: premiiDisponibile } = await supabase
+                    .from('premii')
+                    .select('*')
+                    .eq('castigat', false);
+
+                let premiuCastigatText = "Doar dulciurile delicioase de astăzi! (Fără premiu mare)";
+                
+                // 50% șanse să pice un premiu mare, dacă mai sunt disponibile
+                if (premiiDisponibile && premiiDisponibile.length > 0 && Math.random() < 0.5) {
+                    const index = Math.floor(Math.random() * premiiDisponibile.length);
+                    const literaAleasa = premiiDisponibile[index].litera;
+                    premiuCastigatText = `Litera ${literaAleasa} (Premiu Mare! 🎉)`;
+
+                    await supabase
+                        .from('premii')
+                        .update({ castigat: true })
+                        .eq('id', premiiDisponibile[index].id);
+                }
+
+                await supabase
+                    .from('zile_advent')
+                    .update({ scanat: true, premiu_obtinut: premiuCastigatText })
+                    .eq('zi', ziCurenta);
+
+                document.getElementById('descriere').innerText = "🎉 Felicitări! Cutiuța a fost deschisă.";
+                document.getElementById('rezultat').innerHTML = `Ai primit: <span style="color:#d9534f; font-size:24px;">${premiuCastigatText}</span>`;
+                btn.style.display = "none";
+
+            } catch (err) {
+                console.error(err);
+                document.getElementById('rezultat').innerHTML = "Eroare la procesare.";
+                btn.disabled = false;
+            }
+        }
+
+        async function reseteazaTot() {
+            if (!confirm("Sigur vrei să resetezi totul?")) return;
+            try {
+                await supabase.from('zile_advent').update({ scanat: false, premiu_obtinut: null }).neq('zi', 0);
+                await supabase.from('premii').update({ castigat: false }).neq('id', 0);
+                alert("✅ Resetat cu succes!");
+                location.reload();
+            } catch (err) {
+                alert("Eroare la resetare.");
+            }
+        }
+    </script>
+</body>
+</html>

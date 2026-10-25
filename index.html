@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar Advent al Nigiosicii</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Mountains+of+Christmas:wght@700&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Librăria Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Librăria pentru scanerul QR -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+    <!-- Efect de ninsoare -->
+    <div class="snowflakes" aria-hidden="true">
+        <div class="snowflake">❅</div><div class="snowflake">❆</div><div class="snowflake">❅</div>
+        <div class="snowflake">❆</div><div class="snowflake">❅</div><div class="snowflake">❆</div>
+    </div>
+
+    <div class="container">
+        <!-- ECRAN 1: HOME -->
+        <div id="ecran-acasa" style="display: none;">
+            <h1 class="titlu-craciun">Bine ai venit la Calendarul Advent al Nigiosicii! 🎄✨</h1>
+            
+            <div id="countdown-container" class="cutie-decorativa" style="display: none;">
+                <h3>Magia începe în:</h3>
+                <div id="countdown-timer"></div>
+            </div>
+
+            <div id="buton-scanare-container" class="cutie-decorativa">
+                <p>Ai extras un QR din bol astăzi?</p>
+                <button class="btn-festiv" onclick="pornesteScanerul()">📷 Scanează QR-ul</button>
+                <div id="reader"></div>
+            </div>
+            
+            <h2 class="subtitlu">Calendarul Lunii Decembrie 🎅</h2>
+            <div id="grid-zile" class="grid-zile">
+                <!-- Se va umple din JavaScript -->
+            </div>
+        </div>
+
+        <!-- ECRAN 2: EXTRAGERE / ZIUA CURENTĂ -->
+        <div id="ecran-zi" style="display: none;" class="cutie-decorativa">
+            <h1 id="titluZi" class="titlu-craciun">Extragerea de Azi 🎁</h1>
+            <p id="descriere-rezultat">Se verifică spiridușii...</p>
+            
+            <button id="btnExtragere" class="btn-festiv" style="display:none;" onclick="trageLaSorti()">Vezi ce ai primit!</button>
+            
+            <div id="ruleta" class="ruleta" style="display: none;">
+                🎰 Moșul amestecă darurile... ✨
+            </div>
+            
+            <div id="rezultat-final" style="display: none;">
+                <h3 id="mesaj-rezultat"></h3>
+                <img id="imagine-rezultat" src="" alt="Rezultat" style="display:none;">
+                <p id="citat-rezultat" class="citat" style="display:none;"></p>
+            </div>
+            
+            <button onclick="inapoiAcasa()" class="btn-secundar" style="margin-top: 20px;">Înapoi la meniul principal</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

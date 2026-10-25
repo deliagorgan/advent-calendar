@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar Advent</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- Librăria Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Librăria pentru scanerul QR -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+</head>
+<body>
+
+    <div class="card">
+        
+        <!-- ECRAN 1: Pagina de Bun Venit (când intri pe linkul simplu) -->
+        <div id="ecran-acasa" style="display: none;">
+            <h1>Bine ai venit! 🎄</h1>
+            <p>Descoperă surprizele din Calendarul Advent. Apasă butonul de mai jos pentru a scana codul QR de pe cutiuța de astăzi!</p>
+            
+            <button onclick="pornesteScanerul()">📷 Scanează Codul QR</button>
+            <div id="reader"></div> <!-- Aici va apărea camera -->
+            
+            <h2 style="margin-top: 30px; font-size: 18px; color: #2b547e;">Situația Cadourilor:</h2>
+            <div id="grid-zile" class="grid-zile">
+                <!-- Se va umple automat din JavaScript -->
+            </div>
+        </div>
+
+        <!-- ECRAN 2: Pagina pentru Ziua Scanată -->
+        <div id="ecran-zi" style="display: none;">
+            <h1 id="titluZi">Calendar Advent 🎁</h1>
+            <p id="descriere">Se verifică cutiuța...</p>
+            
+            <button id="btnExtragere" style="display:none;" onclick="deschideCutia()">Deschide cutiuța!</button>
+            
+            <!-- Aici punem animația de suspans -->
+            <div id="ruleta" class="ruleta" style="display: none;">
+                🎰 Se amestecă premiile... 🎲
+            </div>
+            
+            <div id="rezultat"></div>
+            
+            <button onclick="inapoiAcasa()" class="btn-secundar" style="margin-top: 20px;">Înapoi la meniul principal</button>
+        </div>
+
+        <!-- ECRAN 3: Panoul de Admin -->
+        <div id="ecran-admin" style="display: none;">
+            <h1>🛠️ Panou Admin</h1>
+            <p>Aici poți reseta calendarul înainte să îl dăruiești.</p>
+            <button onclick="reseteazaTot()" style="background-color: #333;">Resetează totul (Rescanabil)</button>
+        </div>
+
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

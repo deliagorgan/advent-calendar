@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calendar Advent - Ziua Specială</title>
+    <!-- Legăm stilurile CSS separate -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Librătria Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+
+    <div class="card">
+        <h1 id="titluZi">Calendar Advent 🎄</h1>
+        <p id="descriere">Se verifică cutiuța...</p>
+        
+        <button id="btnExtragere" style="display:none;" onclick="deschideCutia()">Deschide cutiuța de azi!</button>
+        
+        <div id="rezultat"></div>
+    </div>
+
+    <!-- Legăm scriptul JS separat -->
+    <script src="script.js"></script>
+</body>
+</html>
